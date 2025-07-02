@@ -1,5 +1,7 @@
 // presentation/providers/ai_provider.dart
 import 'package:flutter/foundation.dart';
+import 'package:taskgenius/core/utils/cache_manager.dart';
+import 'dart:convert';
 import 'package:taskgenius/data/datasources/remote/ai_service.dart';
 
 class AIProvider with ChangeNotifier {
@@ -24,14 +26,14 @@ class AIProvider with ChangeNotifier {
     try {
       // Check cache first
       final cacheKey = 'task_generation_${input.hashCode}';
-      final cached = await _cacheManager.getCachedResponse(cacheKey);
+      final cached = _cacheManager.get<List<TaskSuggestion>>(cacheKey);
 
       if (cached != null) {
         _suggestions = cached;
       } else {
         final response = await _aiService.generateTaskSuggestions(input);
         _suggestions = _parseTaskSuggestions(response);
-        await _cacheManager.cacheResponse(cacheKey, _suggestions);
+        _cacheManager.set(cacheKey, _suggestions);
       }
 
       _error = null;
@@ -41,6 +43,25 @@ class AIProvider with ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  List<TaskSuggestion> _parseTaskSuggestions(String response) {
+    // Try to decode the response as JSON and map to TaskSuggestion
+    try {
+      final decoded = jsonDecode(response);
+      if (decoded is List) {
+        return decoded
+            .map<TaskSuggestion>((e) => TaskSuggestion.fromMap(e))
+            .toList();
+      } else if (decoded is Map && decoded['tasks'] is List) {
+        return (decoded['tasks'] as List)
+            .map<TaskSuggestion>((e) => TaskSuggestion.fromMap(e))
+            .toList();
+      }
+    } catch (e) {
+      // Optionally log or handle parse error
+    }
+    return [];
   }
 
   void _setLoading(bool loading) {

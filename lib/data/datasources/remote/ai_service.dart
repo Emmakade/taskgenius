@@ -75,4 +75,48 @@ class AIService {
       throw AIException('Failed to analyze task priorities: ${e.toString()}');
     }
   }
+
+  List<TaskSuggestion> _parseTaskSuggestions(String content) {
+    // Try to decode the content as JSON, fallback to empty list on error
+    try {
+      final data = jsonDecode(content);
+      if (data is List) {
+        return data.map((e) => TaskSuggestion.fromMap(e)).toList();
+      } else if (data is Map && data['tasks'] is List) {
+        return (data['tasks'] as List)
+            .map((e) => TaskSuggestion.fromMap(e))
+            .toList();
+      }
+    } catch (e) {
+      // Optionally log or handle parse error
+    }
+    return [];
+  }
+}
+
+class TaskSuggestion {
+  final String title;
+  final String? description;
+  final String? suggestedPriority;
+  final String? dueDate;
+  final String? reasoning;
+
+  TaskSuggestion({
+    required this.title,
+    this.description,
+    this.suggestedPriority,
+    this.dueDate,
+    this.reasoning,
+  });
+
+  factory TaskSuggestion.fromMap(Map<String, dynamic> map) {
+    return TaskSuggestion(
+      title: map['title'] as String? ?? '',
+      description: map['description'] as String?,
+      suggestedPriority:
+          map['suggested_priority'] as String? ?? map['priority'] as String?,
+      dueDate: map['due_date'] as String?,
+      reasoning: map['reasoning'] as String?,
+    );
+  }
 }

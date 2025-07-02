@@ -8,6 +8,12 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
   ProjectRepositoryImpl(this.databaseHelper);
 
+  Future<List<Project>> getAllProjects() async {
+    final db = await databaseHelper.database;
+    final projectMaps = await db.query('projects');
+    return projectMaps.map((map) => Project.fromMap(map)).toList();
+  }
+
   @override
   Future<void> addProject(Project project) {
     // TODO: implement addProject

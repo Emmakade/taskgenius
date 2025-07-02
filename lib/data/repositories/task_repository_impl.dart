@@ -31,6 +31,15 @@ class TaskRepositoryImpl implements TaskRepository {
         .toList();
   }
 
+  Future<List<Task>> getAllTasks() async {
+    return await getTasks();
+  }
+
+  Future<Task> createTask(Task task) async {
+    await addTask(task);
+    return task;
+  }
+
   @override
   Future<void> addTask(Task task) async {
     final db = await databaseHelper.database;

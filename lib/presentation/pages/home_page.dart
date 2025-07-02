@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:taskgenius/core/utils/route_name.dart';
 
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
@@ -66,7 +67,8 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: Icon(Icons.smart_toy),
-            onPressed: () => Navigator.pushNamed(context, '/ai-assistant'),
+            onPressed: () =>
+                Navigator.pushNamed(context, RouteNames.aiAssistant),
           ),
         ],
       ),

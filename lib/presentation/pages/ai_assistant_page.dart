@@ -46,6 +46,119 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
     );
   }
 
+  Widget _buildWelcomeCard() {
+    return Card(
+      color: Colors.purple.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Welcome to your AI Task Assistant!',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Describe your tasks in natural language and get structured suggestions instantly.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingCard() {
+    return Card(
+      color: Colors.purple.shade100,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text('Thinking... Please wait.'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(String error) {
+    return Card(
+      color: Colors.red.shade100,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(Icons.error, color: Colors.red),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(error, style: TextStyle(color: Colors.red.shade900)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionCard(dynamic suggestion) {
+    // Accepts TaskSuggestion or Map
+    final title = suggestion.title ?? '';
+    final description = suggestion.description ?? '';
+    final priority = suggestion.suggestedPriority ?? '';
+    final dueDate = suggestion.dueDate ?? '';
+    final reasoning = suggestion.reasoning ?? '';
+
+    return Card(
+      color: Colors.green.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            if (description.isNotEmpty) ...[
+              SizedBox(height: 4),
+              Text(description, style: Theme.of(context).textTheme.bodyMedium),
+            ],
+            if (priority.isNotEmpty || dueDate.isNotEmpty) ...[
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  if (priority.isNotEmpty)
+                    Chip(label: Text('Priority: $priority')),
+                  if (dueDate.isNotEmpty) ...[
+                    SizedBox(width: 8),
+                    Chip(label: Text('Due: $dueDate')),
+                  ],
+                ],
+              ),
+            ],
+            if (reasoning.isNotEmpty) ...[
+              SizedBox(height: 8),
+              Text(
+                'Reasoning: $reasoning',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInputSection() {
     return Container(
       padding: EdgeInsets.all(16),
