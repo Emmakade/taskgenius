@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:taskgenius/core/utils/cache_manager.dart';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:taskgenius/data/datasources/remote/ai_service.dart';
 
 class AIProvider with ChangeNotifier {
@@ -60,6 +61,7 @@ class AIProvider with ChangeNotifier {
       }
     } catch (e) {
       // Optionally log or handle parse error
+      log("Exception occure: $e");
     }
     return [];
   }

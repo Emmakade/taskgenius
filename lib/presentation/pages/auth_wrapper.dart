@@ -22,7 +22,7 @@ class AuthWrapper extends StatelessWidget {
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
                   Text(
-                    'Task Manager Pro',
+                    'Task Genius',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   SizedBox(height: 8),
