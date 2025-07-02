@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../../core/utils/route_name.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -152,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     TextButton(
                       onPressed: () =>
-                          Navigator.pushNamed(context, '/register'),
+                          Navigator.pushNamed(context, RouteNames.register),
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
@@ -197,6 +198,7 @@ class _LoginPageState extends State<LoginPage> {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
       context.read<AuthProvider>().signIn(email, password);
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     }
   }
 }

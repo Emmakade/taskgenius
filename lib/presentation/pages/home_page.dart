@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:taskgenius/presentation/providers/task_provider.dart';
+import 'package:taskgenius/domain/entities/task.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,6 +12,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void _showTaskDetails(BuildContext context, Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(task.title),
+        content: Text(task.description),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateTaskStatus(Task task, TaskStatus status) {
+    final provider = context.read<TaskProvider>();
+    provider.updateTask(task.copyWith(status: status));
+  }
+
+  void _showCreateTaskDialog(BuildContext context) {
+    // Placeholder for create task dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Create Task'),
+        content: Text('Task creation form goes here.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +99,38 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => _showCreateTaskDialog(context),
         child: Icon(Icons.add),
       ),
+    );
+  }
+}
+
+// Minimal TaskTile widget for displaying a task
+class TaskTile extends StatelessWidget {
+  final Task task;
+  final VoidCallback onTap;
+  final ValueChanged<TaskStatus> onStatusChanged;
+
+  const TaskTile({
+    super.key,
+    required this.task,
+    required this.onTap,
+    required this.onStatusChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(task.title),
+      subtitle: Text(task.description),
+      trailing: DropdownButton<TaskStatus>(
+        value: task.status,
+        onChanged: (status) {
+          if (status != null) onStatusChanged(status);
+        },
+        items: TaskStatus.values.map((status) {
+          return DropdownMenuItem(value: status, child: Text(status.name));
+        }).toList(),
+      ),
+      onTap: onTap,
     );
   }
 }

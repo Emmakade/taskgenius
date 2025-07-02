@@ -110,7 +110,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   validator: _validatePassword,
                   keyboardType: TextInputType.visiblePassword,
-                  suffixIcon: null,
                 ),
                 SizedBox(height: 16),
 
@@ -133,7 +132,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   validator: _validateConfirmPassword,
                   keyboardType: TextInputType.visiblePassword,
-                  suffixIcon: null,
                 ),
                 SizedBox(height: 24),
 
@@ -192,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => _signIn(),
                       child: Text(
                         'Sign In',
                         style: TextStyle(
