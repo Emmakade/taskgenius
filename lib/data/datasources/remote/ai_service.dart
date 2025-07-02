@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:taskgenius/core/errors/exceptions.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 
 class AIService {
