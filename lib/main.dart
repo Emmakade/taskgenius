@@ -81,10 +81,8 @@ class MyApp extends StatelessWidget {
           create: (_) => my_auth.AuthProvider(getIt<AuthRepository>()),
         ),
         ChangeNotifierProvider(
-          create: (_) => TaskProvider(
-            getIt<TaskRepositoryImpl>(),
-            getIt<ProjectRepositoryImpl>(),
-          ),
+          create: (_) =>
+              TaskProvider(getIt<TaskRepository>(), getIt<ProjectRepository>()),
         ),
         ChangeNotifierProvider(
           create: (_) => AIProvider(getIt<AIService>(), getIt<CacheManager>()),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -50,9 +52,9 @@ class RegisterPageState extends State<RegisterPage> {
                 SizedBox(height: 16),
                 Text(
                   'Join Task Genius',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: Colors.red,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -87,7 +89,7 @@ class RegisterPageState extends State<RegisterPage> {
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                   validator: _validateEmail,
-                  obscureText: true,
+                  obscureText: false,
                   suffixIcon: null,
                 ),
                 SizedBox(height: 16),
@@ -247,21 +249,23 @@ class RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _signUp() {
+  void _signUp() async {
     if (_formKey.currentState?.validate() ?? false) {
       final name = _nameController.text.trim();
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      context
-          .read<AuthProvider>()
-          .signUp(name, email, password)
-          .then((_) {
-            _signIn();
-          })
-          .catchError((error) {
-            // Error is handled by the AuthProvider
-          });
+      try {
+        await context.read<AuthProvider>().signUp(email, password, name);
+        _signIn();
+      } catch (error, stack) {
+        log('Sign up error: $error\n$stack');
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Sign up failed: $error')));
+        }
+      }
     }
   }
 

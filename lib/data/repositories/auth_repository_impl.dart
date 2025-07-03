@@ -27,7 +27,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return _mapFirebaseUserToUser(credential.user!);
     } on firebase_auth.FirebaseAuthException catch (e) {
-      throw AuthException(mapFirebaseError(e.code));
+      final message = e.message ?? mapFirebaseError(e.code);
+      throw AuthException(message);
     } catch (e) {
       throw AuthException('An unexpected error occurred: $e');
     }

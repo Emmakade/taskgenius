@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:taskgenius/data/repositories/project_repository_impl.dart';
-import 'package:taskgenius/data/repositories/task_repository_impl.dart';
+import 'package:taskgenius/domain/repositories/project_repository.dart';
+import 'package:taskgenius/domain/repositories/task_repository.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 import 'package:taskgenius/domain/entities/project.dart';
 
 class TaskProvider with ChangeNotifier {
-  final TaskRepositoryImpl _taskRepositoryImpl;
-  final ProjectRepositoryImpl _projectRepositoryImpl;
+  final TaskRepository _taskRepository;
+  final ProjectRepository _projectRepository;
 
-  TaskProvider(this._taskRepositoryImpl, this._projectRepositoryImpl);
+  TaskProvider(this._taskRepository, this._projectRepository);
 
   List<Task> _tasks = [];
   List<Project> _projects = [];
@@ -23,8 +23,8 @@ class TaskProvider with ChangeNotifier {
   Future<void> loadTasks() async {
     _setLoading(true);
     try {
-      _tasks = await _taskRepositoryImpl.getAllTasks();
-      _projects = await _projectRepositoryImpl.getAllProjects();
+      _tasks = await _taskRepository.getAllTasks();
+      _projects = await _projectRepository.getAllProjects();
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -35,7 +35,7 @@ class TaskProvider with ChangeNotifier {
 
   Future<void> createTask(Task task) async {
     try {
-      final createdTask = await _taskRepositoryImpl.createTask(task);
+      final createdTask = await _taskRepository.createTask(task);
       _tasks.add(createdTask);
       notifyListeners();
     } catch (e) {
@@ -46,7 +46,7 @@ class TaskProvider with ChangeNotifier {
 
   Future<void> updateTask(Task task) async {
     try {
-      await _taskRepositoryImpl.updateTask(task);
+      await _taskRepository.updateTask(task);
       final index = _tasks.indexWhere((t) => t.id == task.id);
       if (index != -1) {
         _tasks[index] = task;
@@ -68,7 +68,7 @@ class TaskProvider with ChangeNotifier {
     for (int i = 0; i < _tasks.length; i++) {
       if (_tasks[i].order != i) {
         _tasks[i] = _tasks[i].copyWith(order: i);
-        await _taskRepositoryImpl.updateTask(_tasks[i]);
+        await _taskRepository.updateTask(_tasks[i]);
       }
     }
 

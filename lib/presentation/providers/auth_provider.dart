@@ -98,7 +98,10 @@ class AuthProvider with ChangeNotifier {
     if (error is AuthException) {
       return error.message;
     }
-    return 'An unexpected error occurred';
+    if (error is Exception) {
+      return error.toString();
+    }
+    return error?.toString() ?? 'An unexpected error occurred';
   }
 
   @override

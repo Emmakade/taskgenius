@@ -4,6 +4,7 @@ import 'package:taskgenius/core/utils/route_name.dart';
 
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
+import '../widgets/task_creation_form.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,12 +36,11 @@ class HomePageState extends State<HomePage> {
   }
 
   void _showCreateTaskDialog(BuildContext context) {
-    // Placeholder for create task dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Create Task'),
-        content: Text('Task creation form goes here.'),
+        content: SingleChildScrollView(child: TaskCreationForm()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -63,7 +63,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Manager Pro'),
+        title: Text('Task Genius'),
         actions: [
           IconButton(
             icon: Icon(Icons.smart_toy),
