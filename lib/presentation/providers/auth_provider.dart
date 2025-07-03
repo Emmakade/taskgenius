@@ -4,8 +4,11 @@ import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../core/errors/exceptions.dart';
 
+import 'dart:async';
+
 class AuthProvider with ChangeNotifier {
   final AuthRepository _authRepository;
+  StreamSubscription<User?>? _authSubscription;
 
   AuthProvider(this._authRepository) {
     _initializeAuth();
@@ -23,7 +26,7 @@ class AuthProvider with ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   void _initializeAuth() {
-    _authRepository.authStateChanges.listen((user) {
+    _authSubscription = _authRepository.authStateChanges.listen((user) {
       _currentUser = user;
       _isInitialized = true;
       notifyListeners();
@@ -31,61 +34,76 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signIn(String email, String password) async {
-    _setLoading(true);
-    _clearError();
+    setLoading(true);
+    clearError();
 
     try {
       final user = await _authRepository.signIn(email, password);
       _currentUser = user;
     } catch (e) {
-      _error = _getErrorMessage(e);
+      _error = getErrorMessage(e);
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> signUp(String email, String password, String name) async {
-    _setLoading(true);
-    _clearError();
+    setLoading(true);
+    clearError();
 
     try {
       final user = await _authRepository.signUp(email, password, name);
       _currentUser = user;
     } catch (e) {
-      _error = _getErrorMessage(e);
+      _error = getErrorMessage(e);
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> signOut() async {
-    _setLoading(true);
-    _clearError();
+    setLoading(true);
+    clearError();
 
     try {
       await _authRepository.signOut();
       _currentUser = null;
     } catch (e) {
-      _error = _getErrorMessage(e);
+      _error = getErrorMessage(e);
     } finally {
-      _setLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  void _setLoading(bool loading) {
+  void setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
 
-  void _clearError() {
+  void clearError() {
     _error = null;
     notifyListeners();
   }
 
-  String _getErrorMessage(dynamic error) {
+  void setError(String error) {
+    _error = error;
+    notifyListeners();
+  }
+
+  /// Returns a user-friendly error message based on the error type.
+  String getErrorMessage(dynamic error) {
     if (error is AuthException) {
       return error.message;
     }
     return 'An unexpected error occurred';
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 }
