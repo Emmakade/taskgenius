@@ -112,6 +112,12 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomePage(),
           '/ai-assistant': (context) => AIAssistantPage(),
         },
+        builder: (context, child) {
+          ErrorWidget.builder = (FlutterErrorDetails details) {
+            return Center(child: Text(details.exceptionAsString()));
+          };
+          return child!;
+        },
       ),
     );
   }

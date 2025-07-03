@@ -48,7 +48,8 @@ class LoginPageState extends State<LoginPage> {
                   'Task Genius',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    // color: Theme.of(context).primaryColor,
+                    color: Colors.red,
                   ),
                   textAlign: TextAlign.center,
                 ),
