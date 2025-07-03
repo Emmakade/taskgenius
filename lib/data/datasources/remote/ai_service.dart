@@ -151,4 +151,41 @@ class TaskSuggestion {
       reasoning: map['reasoning'] as String?,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'suggestedPriority': suggestedPriority,
+      'dueDate': dueDate,
+      'reasoning': reasoning,
+    };
+  }
 }
+
+// class TaskSuggestion {
+//   final String title;
+//   final String? description;
+//   final String? suggestedPriority;
+//   final String? dueDate;
+//   final String? reasoning;
+
+//   TaskSuggestion({
+//     required this.title,
+//     this.description,
+//     this.suggestedPriority,
+//     this.dueDate,
+//     this.reasoning,
+//   });
+
+//   factory TaskSuggestion.fromMap(Map<String, dynamic> map) {
+//     return TaskSuggestion(
+//       title: map['title'] as String? ?? '',
+//       description: map['description'] as String?,
+//       suggestedPriority:
+//           map['suggested_priority'] as String? ?? map['priority'] as String?,
+//       dueDate: map['due_date'] as String?,
+//       reasoning: map['reasoning'] as String?,
+//     );
+//   }
+// }

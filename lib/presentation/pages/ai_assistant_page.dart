@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taskgenius/presentation/providers/ai_provider.dart';
+import 'package:taskgenius/data/datasources/remote/ai_service.dart';
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 import 'package:taskgenius/domain/entities/chat_message.dart';
@@ -165,7 +166,7 @@ class AIAssistantPageState extends State<AIAssistantPage> {
           children: [
             CircularProgressIndicator(),
             SizedBox(width: 16),
-            Text('Thinking... Please wait.'),
+            Text('Analysing... Please wait.'),
           ],
         ),
       ),
@@ -309,13 +310,22 @@ class AIAssistantPageState extends State<AIAssistantPage> {
       final aiProvider = context.read<AIProvider>();
       await aiProvider.generateTasksFromText(text);
 
-      // Save chat to chat provider and persist in DB
+      // Log the raw AI response and the parsed suggestions
+      try {
+        // If you want to see the raw JSON string, you can log it here
+        final rawJson = aiProvider.suggestions.map((s) => s.toMap()).toList();
+        print('AI Suggestions (JSON to be saved): ${rawJson.toString()}');
+      } catch (e) {
+        print('Error logging AI suggestions: $e');
+      }
+
+      // Save chat to chat provider and persist in DB (store as JSON for aiResponses)
       final chatProvider = context.read<ChatProvider>();
       await chatProvider.addChat(
         ChatMessage(
           id: UniqueKey().toString(),
           userMessage: text,
-          aiResponses: List.from(aiProvider.suggestions),
+          aiResponses: aiProvider.suggestions.map((s) => s.toMap()).toList(),
           timestamp: DateTime.now(),
         ),
       );
