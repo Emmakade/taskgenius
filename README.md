@@ -193,4 +193,4 @@ sequenceDiagram
 
 - Found a bug? Open an issue!
 - Want to contribute? Fork the repo and submit a PR.
-- Questions? Contact the maintainer or open a discussion.
+- Questions? Contact [dev Nuel](https://facebook.com/ogladeekay) or open a discussion.
