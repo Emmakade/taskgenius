@@ -4,6 +4,7 @@ import 'package:taskgenius/core/utils/route_name.dart';
 
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
+import 'package:taskgenius/presentation/widgets/task_tile.dart';
 import '../widgets/task_creation_form.dart';
 
 class HomePage extends StatefulWidget {
@@ -101,38 +102,6 @@ class HomePageState extends State<HomePage> {
         onPressed: () => _showCreateTaskDialog(context),
         child: Icon(Icons.add),
       ),
-    );
-  }
-}
-
-// Minimal TaskTile widget for displaying a task
-class TaskTile extends StatelessWidget {
-  final Task task;
-  final VoidCallback onTap;
-  final ValueChanged<TaskStatus> onStatusChanged;
-
-  const TaskTile({
-    super.key,
-    required this.task,
-    required this.onTap,
-    required this.onStatusChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(task.title),
-      subtitle: Text(task.description),
-      trailing: DropdownButton<TaskStatus>(
-        value: task.status,
-        onChanged: (status) {
-          if (status != null) onStatusChanged(status);
-        },
-        items: TaskStatus.values.map((status) {
-          return DropdownMenuItem(value: status, child: Text(status.name));
-        }).toList(),
-      ),
-      onTap: onTap,
     );
   }
 }

@@ -1,4 +1,3 @@
-// presentation/providers/ai_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:taskgenius/core/utils/cache_manager.dart';
 import 'dart:convert';
@@ -38,9 +37,10 @@ class AIProvider with ChangeNotifier {
       }
 
       _error = null;
-    } catch (e) {
+    } catch (e, stack) {
       _error = e.toString();
       _suggestions = [];
+      log('AIProvider.generateTasksFromText error: $e\n$stack');
     } finally {
       _setLoading(false);
     }
@@ -59,9 +59,8 @@ class AIProvider with ChangeNotifier {
             .map<TaskSuggestion>((e) => TaskSuggestion.fromMap(e))
             .toList();
       }
-    } catch (e) {
-      // Optionally log or handle parse error
-      log("Exception occure: $e");
+    } catch (e, stack) {
+      log('AIProvider._parseTaskSuggestions error: $e\n$stack');
     }
     return [];
   }

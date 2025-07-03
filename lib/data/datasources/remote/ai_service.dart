@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:taskgenius/core/errors/exceptions.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 
 class AIService {
   final Dio _dio;
-  final String _apiKey;
+  final String _apiKey = dotenv.env['DEEPSEEK_API_KEY'] ?? '';
 
-  AIService(this._dio, this._apiKey) {
+  AIService(this._dio, String s) {
     _dio.options.headers['Authorization'] = 'Bearer $_apiKey';
     _dio.options.baseUrl = 'https://api.deepseek.com/v1';
   }
@@ -33,7 +34,9 @@ class AIService {
       );
 
       return response.data['choices'][0]['message']['content'];
-    } catch (e) {
+    } catch (e, stack) {
+      // Log the error for debugging
+      print('AIService.generateTaskSuggestions error: $e\n$stack');
       throw AIException('Failed to generate task suggestions: ${e.toString()}');
     }
   }
@@ -71,7 +74,8 @@ class AIService {
 
       final content = response.data['choices'][0]['message']['content'];
       return _parseTaskSuggestions(content);
-    } catch (e) {
+    } catch (e, stack) {
+      print('AIService.analyzeTaskPriorities error: $e\n$stack');
       throw AIException('Failed to analyze task priorities: ${e.toString()}');
     }
   }
@@ -87,8 +91,8 @@ class AIService {
             .map((e) => TaskSuggestion.fromMap(e))
             .toList();
       }
-    } catch (e) {
-      // Optionally log or handle parse error
+    } catch (e, stack) {
+      print('AIService._parseTaskSuggestions error: $e\n$stack');
     }
     return [];
   }
