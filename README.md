@@ -8,7 +8,7 @@ Task Genius is a modern Flutter productivity app that leverages AI (OpenRouter/D
 
 1. **Clone the Repository**
    ```sh
-   git clone <your-repo-url>
+   git clone https://github.com/Emmakade/taskgenius.git
    cd taskgenius
    ```
 
