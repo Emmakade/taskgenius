@@ -1,16 +1,20 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:taskgenius/core/errors/exceptions.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 
 class AIService {
   final Dio _dio;
-  final String _apiKey = dotenv.env['DEEPSEEK_API_KEY'] ?? '';
+  final String _apiKey;
 
-  AIService(this._dio, String s) {
+  AIService(this._dio, this._apiKey) {
     _dio.options.headers['Authorization'] = 'Bearer $_apiKey';
-    _dio.options.baseUrl = 'https://api.deepseek.com/v1';
+    _dio.options.headers['Content-Type'] = 'application/json';
+    // _dio.options.headers['HTTP-Referer'] =
+    //     'https://your-site-url.com'; // <-- set your site
+    _dio.options.headers['X-Title'] =
+        'Task Genius App'; // <-- set your app/site name
+    _dio.options.baseUrl = 'https://openrouter.ai/api/v1';
   }
 
   Future<String> generateTaskSuggestions(String input) async {
@@ -18,26 +22,38 @@ class AIService {
       final response = await _dio.post(
         '/chat/completions',
         data: {
-          'model': 'deepseek-chat',
+          'model': 'deepseek/deepseek-r1:free',
           'messages': [
             {
               'role': 'system',
               'content': '''You are a helpful task management assistant. 
-            When given a natural language input, extract and structure task information.
-            Respond with JSON format containing tasks with title, description, priority, and due_date.''',
+            When given a natural language input, extract, analyse and structure task information.
+            Respond with only JSON format (No other explanation) containing task(s) break it down and group it into "title", "description", "priority", and "due_date".''',
             },
             {'role': 'user', 'content': input},
           ],
-          'max_tokens': 1000,
-          'temperature': 0.7,
         },
       );
 
-      return response.data['choices'][0]['message']['content'];
+      print(
+        'OpenRouter response: ${response.data}',
+      ); // Debug: print full response
+
+      // Defensive: check for choices/message
+      final choices = response.data['choices'];
+      if (choices != null && choices.isNotEmpty) {
+        final message = choices[0]['message'];
+        if (message != null && message['content'] != null) {
+          return message['content'];
+        }
+      }
+      throw AIException('No valid response from OpenRouter');
     } catch (e, stack) {
       // Log the error for debugging
-      print('AIService.generateTaskSuggestions error: $e\n$stack');
-      throw AIException('Failed to generate task suggestions: ${e.toString()}');
+      print('**** AIService.generateTaskSuggestions error: $e\n$stack');
+      throw AIException(
+        '****Failed to generate task suggestions: ${e.toString()}',
+      );
     }
   }
 
@@ -57,7 +73,7 @@ class AIService {
       final response = await _dio.post(
         '/chat/completions',
         data: {
-          'model': 'deepseek-chat',
+          'model': 'deepseek/deepseek-r1:free',
           'messages': [
             {
               'role': 'system',
@@ -81,9 +97,15 @@ class AIService {
   }
 
   List<TaskSuggestion> _parseTaskSuggestions(String content) {
-    // Try to decode the content as JSON, fallback to empty list on error
     try {
-      final data = jsonDecode(content);
+      // Remove Markdown code block markers if present
+      final cleaned = content
+          .replaceAll(RegExp(r'^```json', multiLine: true), '')
+          .replaceAll(RegExp(r'^```', multiLine: true), '')
+          .replaceAll(RegExp(r'```', multiLine: true), '')
+          .trim();
+
+      final data = jsonDecode(cleaned);
       if (data is List) {
         return data.map((e) => TaskSuggestion.fromMap(e)).toList();
       } else if (data is Map && data['tasks'] is List) {
@@ -93,6 +115,12 @@ class AIService {
       }
     } catch (e, stack) {
       print('AIService._parseTaskSuggestions error: $e\n$stack');
+      // Fallback: treat the content as a plain text suggestion
+      if (content.trim().isNotEmpty) {
+        return [
+          TaskSuggestion(title: 'AI Response', description: content.trim()),
+        ];
+      }
     }
     return [];
   }

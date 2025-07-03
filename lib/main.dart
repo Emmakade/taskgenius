@@ -18,6 +18,7 @@ import 'domain/repositories/auth_repository.dart';
 import 'presentation/providers/auth_provider.dart' as my_auth;
 import 'presentation/providers/task_provider.dart';
 import 'presentation/providers/ai_provider.dart';
+import 'presentation/providers/chat_provider.dart';
 import 'presentation/pages/auth_wrapper.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/register_page.dart';
@@ -50,7 +51,7 @@ Future<void> setupDependencies() async {
 
   // Services
   getIt.registerLazySingleton<AIService>(
-    () => AIService(getIt<Dio>(), dotenv.env['DEEPSEEK_API_KEY'] ?? ''),
+    () => AIService(getIt<Dio>(), dotenv.env['OPENROUTER_API_KEY'] ?? ''),
   );
 
   // Repositories
@@ -87,6 +88,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AIProvider(getIt<AIService>(), getIt<CacheManager>()),
         ),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: MaterialApp(
         title: 'Task Genius',
@@ -110,6 +112,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomePage(),
           '/ai-assistant': (context) => AIAssistantPage(),
         },
+        debugShowCheckedModeBanner: false,
         builder: (context, child) {
           ErrorWidget.builder = (FlutterErrorDetails details) {
             return Center(child: Text(details.exceptionAsString()));
