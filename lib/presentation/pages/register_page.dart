@@ -8,10 +8,10 @@ class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  RegisterPageState createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -49,7 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Join Task Manager Pro',
+                  'Join Task Genius',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor,
@@ -257,7 +257,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .read<AuthProvider>()
           .signUp(name, email, password)
           .then((_) {
-            Navigator.pop(context);
+            _signIn();
           })
           .catchError((error) {
             // Error is handled by the AuthProvider

@@ -15,28 +15,41 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<void> addProject(Project project) {
-    // TODO: implement addProject
-    throw UnimplementedError();
+  Future<void> addProject(Project project) async {
+    final db = await databaseHelper.database;
+    await db.insert('projects', project.toMap());
   }
 
   @override
-  Future<void> deleteProject(String id) {
-    // TODO: implement deleteProject
-    throw UnimplementedError();
+  Future<void> deleteProject(String id) async {
+    final db = await databaseHelper.database;
+    await db.delete('projects', where: 'id = ?', whereArgs: [id]);
   }
 
   @override
-  Future<List<Project>> getProjects() {
-    // TODO: implement getProjects
-    throw UnimplementedError();
+  Future<List<Project>> getProjects() async {
+    final db = await databaseHelper.database;
+    final projectMaps = await db.query('projects');
+    return projectMaps.map((map) => Project.fromMap(map)).toList();
   }
 
   @override
-  Future<void> updateProject(Project project) {
-    // TODO: implement updateProject
-    throw UnimplementedError();
+  Future<void> updateProject(Project project) async {
+    final db = await databaseHelper.database;
+    await db.update(
+      'projects',
+      project.toMap(),
+      where: 'id = ?',
+      whereArgs: [project.id],
+    );
   }
 
-  // TODO: Implement ProjectRepository methods
+  Future<Project?> getProjectById(String id) async {
+    final db = await databaseHelper.database;
+    final maps = await db.query('projects', where: 'id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return Project.fromMap(maps.first);
+    }
+    return null;
+  }
 }

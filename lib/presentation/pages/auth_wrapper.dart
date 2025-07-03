@@ -1,4 +1,3 @@
-// presentation/pages/auth_wrapper.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -12,7 +11,6 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        // Show loading screen while initializing
         if (!authProvider.isInitialized) {
           return Scaffold(
             body: Center(
@@ -36,7 +34,6 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // Navigate based on authentication state
         if (authProvider.isAuthenticated) {
           return HomePage();
         } else {

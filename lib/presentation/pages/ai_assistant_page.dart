@@ -6,10 +6,10 @@ class AIAssistantPage extends StatefulWidget {
   const AIAssistantPage({super.key});
 
   @override
-  _AIAssistantPageState createState() => _AIAssistantPageState();
+  AIAssistantPageState createState() => AIAssistantPageState();
 }
 
-class _AIAssistantPageState extends State<AIAssistantPage> {
+class AIAssistantPageState extends State<AIAssistantPage> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
 
@@ -166,7 +166,7 @@ class _AIAssistantPageState extends State<AIAssistantPage> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha((0.1 * 255).toInt()),
             blurRadius: 4,
             offset: Offset(0, -2),
           ),
