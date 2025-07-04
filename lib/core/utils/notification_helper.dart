@@ -37,17 +37,27 @@ class NotificationHelper {
 
     // Request permissions explicitly for iOS (and Android 13+)
     if (Platform.isIOS) {
-      await _notificationsPlugin
+      final iosPlugin = _notificationsPlugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
+          >();
+      final granted = await iosPlugin?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      print(
+        '[NotificationHelper] iOS notification permission granted: $granted',
+      );
     } else if (Platform.isAndroid) {
-      await _notificationsPlugin
+      final androidPlugin = _notificationsPlugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.requestNotificationsPermission();
+          >();
+      final granted = await androidPlugin?.requestNotificationsPermission();
+      print(
+        '[NotificationHelper] Android notification permission granted: $granted',
+      );
     }
   }
 
@@ -70,13 +80,17 @@ class NotificationHelper {
     tz.initializeTimeZones();
     final tzScheduled = tz.TZDateTime.from(scheduledDateTime, tz.local);
 
+    print(
+      '[NotificationHelper] Scheduling notification: id=$id, title="$title", body="$body", scheduledDateTime=$scheduledDateTime, tzScheduled=$tzScheduled, now=${DateTime.now()}',
+    );
+
     await _notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
       tzScheduled,
       platformDetails,
-      androidAllowWhileIdle: true,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dateAndTime,

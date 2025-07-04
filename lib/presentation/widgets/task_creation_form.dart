@@ -56,8 +56,9 @@ class _TaskCreationFormState extends State<TaskCreationForm> {
             obscureText: false,
             suffixIcon: null,
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 16),
           Row(
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: DropdownButtonFormField<TaskPriority>(
@@ -82,7 +83,11 @@ class _TaskCreationFormState extends State<TaskCreationForm> {
                       setState(() => _priority = p ?? TaskPriority.medium),
                 ),
               ),
-              SizedBox(width: 12),
+            ],
+          ),
+          SizedBox(height: 16),
+          Row(
+            children: [
               Expanded(
                 child: InkWell(
                   onTap: () async {

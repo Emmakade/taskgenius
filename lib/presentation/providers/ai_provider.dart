@@ -49,7 +49,8 @@ class AIProvider with ChangeNotifier {
   List<TaskSuggestion> _parseTaskSuggestions(String response) {
     // Try to decode the response as JSON and map to TaskSuggestion
     try {
-      final decoded = jsonDecode(response);
+      final cleanedResponse = _cleanJson(response);
+      final decoded = jsonDecode(cleanedResponse);
       if (decoded is List) {
         return decoded
             .map<TaskSuggestion>((e) => TaskSuggestion.fromMap(e))
@@ -63,6 +64,11 @@ class AIProvider with ChangeNotifier {
       log('AIProvider._parseTaskSuggestions error: $e\n$stack');
     }
     return [];
+  }
+
+  String _cleanJson(String input) {
+    // Remove code block markers and trim whitespace
+    return input.replaceAll(RegExp(r'```json|```'), '').trim();
   }
 
   void _setLoading(bool loading) {
