@@ -3,4 +3,5 @@ class RouteNames {
   static const register = '/register';
   static const home = '/home';
   static const aiAssistant = '/ai-assistant';
+  static const authWrapper = '/auth';
 }

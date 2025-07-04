@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:taskgenius/domain/repositories/project_repository.dart';
 import 'package:taskgenius/domain/repositories/task_repository.dart';
+import 'package:taskgenius/presentation/pages/auth_wrapper.dart';
 
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
@@ -19,7 +20,7 @@ import 'presentation/providers/auth_provider.dart' as my_auth;
 import 'presentation/providers/task_provider.dart';
 import 'presentation/providers/ai_provider.dart';
 import 'presentation/providers/chat_provider.dart';
-import 'presentation/pages/auth_wrapper.dart';
+import 'presentation/pages/splash_screen.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/home_page.dart';
@@ -105,12 +106,14 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.dark,
           ),
         ),
-        home: AuthWrapper(),
+        home: SplashScreen(),
         routes: {
           '/login': (context) => LoginPage(),
           '/register': (context) => RegisterPage(),
           '/home': (context) => HomePage(),
           '/ai-assistant': (context) => AIAssistantPage(),
+          '/splash': (context) => SplashScreen(),
+          '/auth': (context) => AuthWrapper(),
         },
         debugShowCheckedModeBanner: false,
         builder: (context, child) {
