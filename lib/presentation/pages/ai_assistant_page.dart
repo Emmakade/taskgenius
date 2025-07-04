@@ -148,9 +148,9 @@ class AIAssistantPageState extends State<AIAssistantPage> {
                                 child: Card(
                                   color: isDark
                                       ? colorScheme.secondaryContainer
-                                            .withOpacity(0.25)
+                                            .withOpacity(0.2)
                                       : colorScheme.secondaryContainer
-                                            .withOpacity(0.7),
+                                            .withOpacity(0.65),
                                   child: ListTile(
                                     title: Text(
                                       'AI',
