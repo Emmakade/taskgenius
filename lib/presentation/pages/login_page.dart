@@ -40,10 +40,29 @@ class LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo and title
-                  Icon(
-                    Icons.task_alt,
-                    size: 80,
-                    color: Theme.of(context).primaryColor,
+                  Center(
+                    child: Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary
+                                .withAlpha((0.08 * 255).round()),
+                            blurRadius: 12,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/images/taskgenius.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 16),
                   Text(
