@@ -1,8 +1,22 @@
 import 'package:taskgenius/domain/entities/task.dart';
+import 'package:flutter/material.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../datasources/local/database_helper.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
+  String _formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
+  TimeOfDay _parseTimeOfDay(String timeString) {
+    final parts = timeString.split(':');
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = int.tryParse(parts[1]) ?? 0;
+    return TimeOfDay(hour: hour, minute: minute);
+  }
+
   final DatabaseHelper databaseHelper;
 
   TaskRepositoryImpl(this.databaseHelper);
@@ -20,6 +34,12 @@ class TaskRepositoryImpl implements TaskRepository {
             dueDate: map['due_date'] != null
                 ? DateTime.tryParse(map['due_date'] as String)
                 : null,
+            dueTime:
+                map['due_time'] != null &&
+                    map['due_time'] is String &&
+                    (map['due_time'] as String).isNotEmpty
+                ? _parseTimeOfDay(map['due_time'] as String)
+                : null,
             priority: TaskPriority.values[map['priority'] as int],
             status: TaskStatus.values[map['status'] as int],
             projectId: map['project_id'] as String,
@@ -31,10 +51,12 @@ class TaskRepositoryImpl implements TaskRepository {
         .toList();
   }
 
+  @override
   Future<List<Task>> getAllTasks() async {
     return await getTasks();
   }
 
+  @override
   Future<Task> createTask(Task task) async {
     await addTask(task);
     return task;
@@ -48,6 +70,7 @@ class TaskRepositoryImpl implements TaskRepository {
       'title': task.title,
       'description': task.description,
       'due_date': task.dueDate?.toIso8601String(),
+      'due_time': task.dueTime != null ? _formatTimeOfDay(task.dueTime!) : null,
       'priority': task.priority.index,
       'status': task.status.index,
       'project_id': task.projectId,
@@ -66,6 +89,9 @@ class TaskRepositoryImpl implements TaskRepository {
         'title': task.title,
         'description': task.description,
         'due_date': task.dueDate?.toIso8601String(),
+        'due_time': task.dueTime != null
+            ? _formatTimeOfDay(task.dueTime!)
+            : null,
         'priority': task.priority.index,
         'status': task.status.index,
         'project_id': task.projectId,

@@ -18,6 +18,7 @@ class _TaskCreationFormState extends State<TaskCreationForm> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   DateTime? _dueDate;
+  TimeOfDay? _dueTime;
   TaskPriority _priority = TaskPriority.medium;
 
   @override
@@ -108,6 +109,31 @@ class _TaskCreationFormState extends State<TaskCreationForm> {
                   ),
                 ),
               ),
+              SizedBox(width: 12),
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (picked != null) setState(() => _dueTime = picked);
+                  },
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'Due Time',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      _dueTime == null
+                          ? 'Select time'
+                          : _dueTime!.format(context),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
           SizedBox(height: 20),
@@ -125,6 +151,7 @@ class _TaskCreationFormState extends State<TaskCreationForm> {
         title: _titleController.text.trim(),
         description: _descController.text.trim(),
         dueDate: _dueDate,
+        dueTime: _dueTime,
         priority: _priority,
         status: TaskStatus.todo,
         projectId: '',

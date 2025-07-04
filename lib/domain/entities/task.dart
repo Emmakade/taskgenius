@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
+
 class Task {
   final String id;
   final String title;
   final String description;
   final DateTime? dueDate;
+  final TimeOfDay? dueTime;
   final TaskPriority priority;
   final TaskStatus status;
   final String projectId;
@@ -15,6 +18,7 @@ class Task {
     required this.title,
     required this.description,
     this.dueDate,
+    this.dueTime,
     required this.priority,
     required this.status,
     required this.projectId,
@@ -27,6 +31,7 @@ class Task {
     String? title,
     String? description,
     DateTime? dueDate,
+    TimeOfDay? dueTime,
     TaskPriority? priority,
     TaskStatus? status,
     int? order,
@@ -36,6 +41,7 @@ class Task {
       title: title ?? this.title,
       description: description ?? this.description,
       dueDate: dueDate ?? this.dueDate,
+      dueTime: dueTime ?? this.dueTime,
       priority: priority ?? this.priority,
       status: status ?? this.status,
       projectId: projectId,

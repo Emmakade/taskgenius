@@ -46,6 +46,7 @@ class DatabaseHelper {
         title TEXT NOT NULL,
         description TEXT,
         due_date TEXT,
+        due_time TEXT,
         priority INTEGER NOT NULL,
         status INTEGER NOT NULL,
         project_id TEXT NOT NULL,

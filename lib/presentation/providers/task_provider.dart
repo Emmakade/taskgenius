@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskgenius/core/utils/notification_helper.dart';
 import 'package:taskgenius/domain/repositories/project_repository.dart';
 import 'package:taskgenius/domain/repositories/task_repository.dart';
 import 'package:taskgenius/domain/entities/task.dart';
@@ -37,6 +38,28 @@ class TaskProvider with ChangeNotifier {
     try {
       final createdTask = await _taskRepository.createTask(task);
       _tasks.add(createdTask);
+
+      // Schedule notification if dueDate and dueTime are set
+      if (createdTask.dueDate != null && createdTask.dueTime != null) {
+        final dueDate = createdTask.dueDate!;
+        final dueTime = createdTask.dueTime!;
+        final scheduledDateTime = DateTime(
+          dueDate.year,
+          dueDate.month,
+          dueDate.day,
+          dueTime.hour,
+          dueTime.minute,
+        );
+        if (scheduledDateTime.isAfter(DateTime.now())) {
+          await NotificationHelper.scheduleTaskNotification(
+            id: createdTask.hashCode, // Use a unique int for notification id
+            title: createdTask.title,
+            body: createdTask.description,
+            scheduledDateTime: scheduledDateTime,
+          );
+        }
+      }
+
       notifyListeners();
     } catch (e) {
       _error = e.toString();

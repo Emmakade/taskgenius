@@ -22,7 +22,29 @@ class HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(task.title),
-        content: Text(task.description),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(task.description),
+            SizedBox(height: 12),
+            if (task.dueDate != null || task.dueTime != null)
+              Row(
+                children: [
+                  if (task.dueDate != null)
+                    Text(
+                      'Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}',
+                    ),
+                  if (task.dueTime != null) ...[
+                    if (task.dueDate != null) SizedBox(width: 8),
+                    Icon(Icons.access_time, size: 18, color: Colors.grey[600]),
+                    SizedBox(width: 2),
+                    Text(task.dueTime!.format(context)),
+                  ],
+                ],
+              ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

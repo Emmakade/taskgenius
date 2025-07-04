@@ -43,9 +43,41 @@ class TaskTile extends StatelessWidget {
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(
-          task.description,
-          style: Theme.of(context).textTheme.bodyMedium,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              task.description,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (task.dueDate != null || task.dueTime != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Row(
+                  children: [
+                    if (task.dueDate != null)
+                      Text(
+                        'Due: '
+                        '${task.dueDate!.toLocal().toString().split(' ')[0]}',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      ),
+                    if (task.dueTime != null) ...[
+                      if (task.dueDate != null) SizedBox(width: 8),
+                      Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: Colors.grey[600],
+                      ),
+                      SizedBox(width: 2),
+                      Text(
+                        task.dueTime!.format(context),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+          ],
         ),
         trailing: DropdownButton<TaskStatus>(
           value: task.status,
