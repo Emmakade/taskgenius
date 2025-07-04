@@ -36,123 +36,170 @@ class AIAssistantPageState extends State<AIAssistantPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('AI Assistant'),
-        backgroundColor: Colors.purple.shade100,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          _buildWelcomeCard(),
-          Consumer<AIProvider>(
-            builder: (context, aiProvider, child) {
-              if (aiProvider.isLoading) {
-                return _buildLoadingCard();
-              }
-              if (aiProvider.error != null) {
-                return _buildErrorCard(aiProvider.error!);
-              }
-              return SizedBox.shrink();
-            },
-          ),
-          Expanded(
-            child: Consumer<ChatProvider>(
-              builder: (context, chatProvider, child) {
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.all(16),
-                  itemCount: chatProvider.chats.length,
-                  itemBuilder: (context, index) {
-                    final chat = chatProvider.chats[index];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // User message card
-                        Slidable(
-                          key: ValueKey('chat_${chat.id}'),
-                          endActionPane: ActionPane(
-                            motion: const DrawerMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (_) async {
-                                  await _deleteChat(context, chat.id);
-                                },
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete,
-                                label: 'Delete',
-                              ),
-                            ],
-                          ),
-                          child: Card(
-                            color: Colors.blue.shade50,
-                            child: ListTile(
-                              title: Text(
-                                'You',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(chat.userMessage),
-                              trailing: Text(
-                                _formatTime(chat.timestamp),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+      body: Container(
+        color: Theme.of(context).colorScheme.surface,
+        child: Column(
+          children: [
+            _buildWelcomeCard(),
+            Consumer<AIProvider>(
+              builder: (context, aiProvider, child) {
+                if (aiProvider.isLoading) {
+                  return _buildLoadingCard();
+                }
+                if (aiProvider.error != null) {
+                  return _buildErrorCard(aiProvider.error!);
+                }
+                return SizedBox.shrink();
+              },
+            ),
+            Expanded(
+              child: Consumer<ChatProvider>(
+                builder: (context, chatProvider, child) {
+                  final colorScheme = Theme.of(context).colorScheme;
+                  final isDark =
+                      Theme.of(context).brightness == Brightness.dark;
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.all(16),
+                    itemCount: chatProvider.chats.length,
+                    itemBuilder: (context, index) {
+                      final chat = chatProvider.chats[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // User message card
+                          Slidable(
+                            key: ValueKey('chat_${chat.id}'),
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (_) async {
+                                    await _deleteChat(context, chat.id);
+                                  },
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
+                            ),
+                            child: Card(
+                              color: isDark
+                                  ? colorScheme.primaryContainer.withOpacity(
+                                      0.25,
+                                    )
+                                  : colorScheme.primaryContainer.withOpacity(
+                                      0.7,
+                                    ),
+                              child: ListTile(
+                                title: Text(
+                                  'You',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  chat.userMessage,
+                                  style: TextStyle(
+                                    color: colorScheme.onPrimaryContainer
+                                        .withOpacity(0.85),
+                                  ),
+                                ),
+                                trailing: Text(
+                                  _formatTime(chat.timestamp),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onPrimaryContainer
+                                        .withOpacity(0.7),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        // AI responses
-                        ...chat.aiResponses.asMap().entries.map((entry) {
-                          final ai = entry.value;
-                          // If the AI response is a JSON object, show a suggestion card, else show as plain text
-                          if (ai is Map<String, dynamic> ||
-                              (ai?.title != null && ai?.description != null)) {
-                            return GestureDetector(
-                              onTap: () => _addTaskFromAI(context, ai),
-                              onLongPress: () => _deleteChat(context, chat.id),
-                              child: _buildSuggestionCard(ai),
-                            );
-                          } else {
-                            final aiText = ai is String ? ai : ai.toString();
-                            return GestureDetector(
-                              onTap: () => _addTaskFromAI(context, ai),
-                              onLongPress: () => _deleteChat(context, chat.id),
-                              child: Card(
-                                color: Colors.green.shade50,
-                                child: ListTile(
-                                  title: Text(
-                                    'AI',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                          // AI responses
+                          ...chat.aiResponses.asMap().entries.map((entry) {
+                            final ai = entry.value;
+                            // If the AI response is a JSON object, show a suggestion card, else show as plain text
+                            if (ai is Map<String, dynamic> ||
+                                (ai?.title != null &&
+                                    ai?.description != null)) {
+                              return GestureDetector(
+                                onTap: () => _addTaskFromAI(context, ai),
+                                onLongPress: () =>
+                                    _deleteChat(context, chat.id),
+                                child: _buildSuggestionCard(
+                                  ai,
+                                  colorScheme,
+                                  isDark,
+                                ),
+                              );
+                            } else {
+                              final aiText = ai is String ? ai : ai.toString();
+                              return GestureDetector(
+                                onTap: () => _addTaskFromAI(context, ai),
+                                onLongPress: () =>
+                                    _deleteChat(context, chat.id),
+                                child: Card(
+                                  color: isDark
+                                      ? colorScheme.secondaryContainer
+                                            .withOpacity(0.25)
+                                      : colorScheme.secondaryContainer
+                                            .withOpacity(0.7),
+                                  child: ListTile(
+                                    title: Text(
+                                      'AI',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSecondaryContainer,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      aiText.trim(),
+                                      style: TextStyle(
+                                        color: colorScheme.onSecondaryContainer
+                                            .withOpacity(0.85),
+                                      ),
+                                    ),
+                                    trailing: Icon(
+                                      Icons.add_task,
+                                      color: colorScheme.secondary,
                                     ),
                                   ),
-                                  subtitle: Text(aiText.trim()),
-                                  trailing: Icon(
-                                    Icons.add_task,
-                                    color: Colors.green,
-                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        }),
-                        SizedBox(height: 12),
-                      ],
-                    );
-                  },
-                );
-              },
+                              );
+                            }
+                          }),
+                          SizedBox(height: 12),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          _buildInputSection(),
-        ],
+            _buildInputSection(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildWelcomeCard() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Card(
-        color: Colors.purple.shade50,
+        color: isDark
+            ? colorScheme.primaryContainer.withOpacity(0.18)
+            : colorScheme.primaryContainer.withOpacity(0.7),
         child: Container(
           padding: const EdgeInsets.all(14.0),
           child: Column(
@@ -160,14 +207,17 @@ class AIAssistantPageState extends State<AIAssistantPage> {
             children: [
               Text(
                 'Welcome to your AI Task Assistant!',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimaryContainer,
+                ),
               ),
               SizedBox(height: 8),
               Text(
                 'Describe your tasks in natural language and get structured suggestions instantly.',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onPrimaryContainer.withOpacity(0.85),
+                ),
               ),
             ],
           ),
@@ -177,32 +227,23 @@ class AIAssistantPageState extends State<AIAssistantPage> {
   }
 
   Widget _buildLoadingCard() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
-      color: Colors.purple.shade100,
+      color: isDark
+          ? colorScheme.primaryContainer.withOpacity(0.18)
+          : colorScheme.primaryContainer.withOpacity(0.7),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            CircularProgressIndicator(),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+            ),
             SizedBox(width: 16),
-            Text('Analysing... Please wait.'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorCard(String error) {
-    return Card(
-      color: Colors.red.shade100,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Icon(Icons.error, color: Colors.red),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(error, style: TextStyle(color: Colors.red.shade900)),
+            Text(
+              'Analysing... Please wait.',
+              style: TextStyle(color: colorScheme.onPrimaryContainer),
             ),
           ],
         ),
@@ -210,7 +251,37 @@ class AIAssistantPageState extends State<AIAssistantPage> {
     );
   }
 
-  Widget _buildSuggestionCard(dynamic suggestion) {
+  Widget _buildErrorCard(String error) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Card(
+      color: isDark
+          ? colorScheme.errorContainer.withOpacity(0.18)
+          : colorScheme.errorContainer.withOpacity(0.7),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Icon(Icons.error, color: colorScheme.error),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                error,
+                style: TextStyle(color: colorScheme.onErrorContainer),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionCard(
+    dynamic suggestion, [
+    ColorScheme? colorScheme,
+    bool isDark = false,
+  ]) {
+    colorScheme ??= Theme.of(context).colorScheme;
     String title = '';
     String description = '';
     String priority = '';
@@ -231,7 +302,9 @@ class AIAssistantPageState extends State<AIAssistantPage> {
       reasoning = suggestion.reasoning ?? '';
     }
     return Card(
-      color: Colors.green.shade50,
+      color: isDark
+          ? colorScheme.secondaryContainer.withOpacity(0.18)
+          : colorScheme.secondaryContainer.withOpacity(0.7),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -240,16 +313,19 @@ class AIAssistantPageState extends State<AIAssistantPage> {
             if (title.isNotEmpty && title != 'AI Response')
               Text(
                 title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSecondaryContainer,
+                ),
               ),
             if (description.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
                   description,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSecondaryContainer.withOpacity(0.85),
+                  ),
                 ),
               ),
             if (priority.isNotEmpty || dueDate.isNotEmpty) ...[
@@ -257,10 +333,22 @@ class AIAssistantPageState extends State<AIAssistantPage> {
               Row(
                 children: [
                   if (priority.isNotEmpty)
-                    Chip(label: Text('Priority: $priority')),
+                    Chip(
+                      label: Text('Priority: $priority'),
+                      backgroundColor: colorScheme.tertiaryContainer,
+                      labelStyle: TextStyle(
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
                   if (dueDate.isNotEmpty) ...[
                     SizedBox(width: 8),
-                    Chip(label: Text('Due: $dueDate')),
+                    Chip(
+                      label: Text('Due: $dueDate'),
+                      backgroundColor: colorScheme.tertiaryContainer,
+                      labelStyle: TextStyle(
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -271,7 +359,7 @@ class AIAssistantPageState extends State<AIAssistantPage> {
                 'Reasoning: $reasoning',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey[700],
+                  color: colorScheme.onSecondaryContainer.withOpacity(0.7),
                 ),
               ),
             ],
