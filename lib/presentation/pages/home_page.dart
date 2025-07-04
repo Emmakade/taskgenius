@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:taskgenius/core/utils/route_name.dart';
 
 import 'package:taskgenius/presentation/providers/task_provider.dart';
+import 'package:taskgenius/presentation/providers/auth_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 import 'package:taskgenius/presentation/widgets/task_tile.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../widgets/task_creation_form.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +31,16 @@ class HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  void _deleteTask(Task task) {
+    final provider = context.read<TaskProvider>();
+    provider.deleteTask(task.id);
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Task deleted Successfukky.')));
+    }
   }
 
   void _updateTaskStatus(Task task, TaskStatus status) {
@@ -71,6 +83,28 @@ class HomePageState extends State<HomePage> {
             onPressed: () =>
                 Navigator.pushNamed(context, RouteNames.aiAssistant),
           ),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'logout') {
+                await context.read<AuthProvider>().signOut();
+                if (mounted) {
+                  Navigator.pushReplacementNamed(context, RouteNames.login);
+                }
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Logout'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: Consumer<TaskProvider>(
@@ -88,11 +122,25 @@ class HomePageState extends State<HomePage> {
             onReorder: taskProvider.reorderTasks,
             itemBuilder: (context, index) {
               final task = taskProvider.tasks[index];
-              return TaskTile(
+              return Slidable(
                 key: ValueKey(task.id),
-                task: task,
-                onTap: () => _showTaskDetails(context, task),
-                onStatusChanged: (status) => _updateTaskStatus(task, status),
+                endActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (_) => _deleteTask(task),
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Delete',
+                    ),
+                  ],
+                ),
+                child: TaskTile(
+                  task: task,
+                  onTap: () => _showTaskDetails(context, task),
+                  onStatusChanged: (status) => _updateTaskStatus(task, status),
+                ),
               );
             },
           );

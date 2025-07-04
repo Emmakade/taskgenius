@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taskgenius/presentation/providers/ai_provider.dart';
-import 'package:taskgenius/data/datasources/remote/ai_service.dart';
+//import 'package:taskgenius/data/datasources/remote/ai_service.dart';
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 import 'package:taskgenius/domain/entities/chat_message.dart';
 import 'package:taskgenius/presentation/providers/chat_provider.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class AIAssistantPage extends StatefulWidget {
   const AIAssistantPage({super.key});
@@ -63,19 +65,36 @@ class AIAssistantPageState extends State<AIAssistantPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // User message card
-                        Card(
-                          color: Colors.blue.shade50,
-                          child: ListTile(
-                            title: Text(
-                              'You',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(chat.userMessage),
-                            trailing: Text(
-                              _formatTime(chat.timestamp),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
+                        Slidable(
+                          key: ValueKey('chat_${chat.id}'),
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (_) async {
+                                  await _deleteChat(context, chat.id);
+                                },
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                          child: Card(
+                            color: Colors.blue.shade50,
+                            child: ListTile(
+                              title: Text(
+                                'You',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(chat.userMessage),
+                              trailing: Text(
+                                _formatTime(chat.timestamp),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                           ),
@@ -304,9 +323,22 @@ class AIAssistantPageState extends State<AIAssistantPage> {
     );
   }
 
-  void _sendMessage() async {
+  Future<void> _sendMessage() async {
     final text = _textController.text.trim();
     if (text.isNotEmpty) {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'No internet connection. Please connect to the internet.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
       final aiProvider = context.read<AIProvider>();
       await aiProvider.generateTasksFromText(text);
 
@@ -314,7 +346,9 @@ class AIAssistantPageState extends State<AIAssistantPage> {
       try {
         // If you want to see the raw JSON string, you can log it here
         final rawJson = aiProvider.suggestions.map((s) => s.toMap()).toList();
-        print('AI Suggestions (JSON to be saved): ${rawJson.toString()}');
+        print(
+          'AI Suggestions (JSON to be saved): [38;5;2m${rawJson.toString()}[0m',
+        );
       } catch (e) {
         print('Error logging AI suggestions: $e');
       }
@@ -403,9 +437,9 @@ class AIAssistantPageState extends State<AIAssistantPage> {
     }
   }
 
-  void _deleteChat(BuildContext context, String chatId) {
+  Future<void> _deleteChat(BuildContext context, String chatId) async {
     final chatProvider = context.read<ChatProvider>();
-    chatProvider.deleteChat(chatId);
+    await chatProvider.deleteChat(chatId);
     if (mounted) {
       ScaffoldMessenger.of(
         context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_text_field.dart';
@@ -194,8 +195,21 @@ class LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  void _signIn() {
+  Future<void> _signIn() async {
     if (_formKey.currentState?.validate() ?? false) {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'No internet connection. Please connect to the internet.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
       context.read<AuthProvider>().signIn(email, password);

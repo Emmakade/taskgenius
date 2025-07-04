@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -249,8 +250,21 @@ class RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _signUp() async {
+  Future<void> _signUp() async {
     if (_formKey.currentState?.validate() ?? false) {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'No internet connection. Please connect to the internet.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
       final name = _nameController.text.trim();
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
