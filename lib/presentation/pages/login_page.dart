@@ -39,6 +39,7 @@ class LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 30),
                   // Logo and title
                   Center(
                     child: Container(
@@ -174,12 +175,14 @@ class LoginPageState extends State<LoginPage> {
                       TextButton(
                         onPressed: () =>
                             Navigator.pushNamed(context, RouteNames.register),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                        ),
                         child: Text(
                           'Sign Up',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

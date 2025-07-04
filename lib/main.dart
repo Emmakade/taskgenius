@@ -91,37 +91,43 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: MaterialApp(
-        title: 'Task Genius',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(elevation: 0, centerTitle: true),
-        ),
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.dark,
+      child: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+
+        child: MaterialApp(
+          title: 'Task Genius',
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: AppBarTheme(elevation: 0, centerTitle: true),
           ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.blue,
+              brightness: Brightness.dark,
+            ),
+          ),
+          home: SplashScreen(),
+          routes: {
+            '/login': (context) => LoginPage(),
+            '/register': (context) => RegisterPage(),
+            '/home': (context) => HomePage(),
+            '/ai-assistant': (context) => AIAssistantPage(),
+            '/splash': (context) => SplashScreen(),
+            '/auth': (context) => AuthWrapper(),
+          },
+          debugShowCheckedModeBanner: false,
+          builder: (context, child) {
+            ErrorWidget.builder = (FlutterErrorDetails details) {
+              return Center(child: Text(details.exceptionAsString()));
+            };
+            return child!;
+          },
         ),
-        home: SplashScreen(),
-        routes: {
-          '/login': (context) => LoginPage(),
-          '/register': (context) => RegisterPage(),
-          '/home': (context) => HomePage(),
-          '/ai-assistant': (context) => AIAssistantPage(),
-          '/splash': (context) => SplashScreen(),
-          '/auth': (context) => AuthWrapper(),
-        },
-        debugShowCheckedModeBanner: false,
-        builder: (context, child) {
-          ErrorWidget.builder = (FlutterErrorDetails details) {
-            return Center(child: Text(details.exceptionAsString()));
-          };
-          return child!;
-        },
       ),
     );
   }

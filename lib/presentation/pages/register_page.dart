@@ -44,7 +44,8 @@ class RegisterPageState extends State<RegisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header
+                SizedBox(height: 30),
+
                 Center(
                   child: Container(
                     width: 90,
@@ -214,12 +215,12 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     TextButton(
                       onPressed: () => _signIn(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                      ),
                       child: Text(
                         'Sign In',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
