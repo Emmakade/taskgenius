@@ -4,4 +4,5 @@ class RouteNames {
   static const home = '/home';
   static const aiAssistant = '/ai-assistant';
   static const authWrapper = '/auth';
+  static const splash = '/splash';
 }

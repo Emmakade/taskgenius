@@ -34,14 +34,16 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
                 color: isDark
-                    ? colorScheme.surface.withOpacity(0.9)
-                    : colorScheme.primaryContainer.withOpacity(0.9),
+                    ? colorScheme.surface.withAlpha((0.8 * 255).toInt())
+                    : colorScheme.primaryContainer.withAlpha(
+                        (0.9 * 255).toInt(),
+                      ),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.primary.withOpacity(0.08),
+                    color: colorScheme.primary.withAlpha((0.8 * 255).toInt()),
                     blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    offset: const Offset(-2, 4),
                   ),
                 ],
               ),

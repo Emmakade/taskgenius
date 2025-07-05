@@ -31,7 +31,6 @@ class NotificationHelper {
     await _notificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (details) async {
-        // Handle notification tap if needed
       },
     );
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:taskgenius/presentation/providers/ai_provider.dart';
-//import 'package:taskgenius/data/datasources/remote/ai_service.dart';
 import 'package:taskgenius/presentation/providers/task_provider.dart';
 import 'package:taskgenius/domain/entities/task.dart';
 import 'package:taskgenius/domain/entities/chat_message.dart';
@@ -99,6 +98,7 @@ class AIAssistantPageState extends State<AIAssistantPage> {
                               child: ListTile(
                                 title: Text(
                                   'You',
+                                  textAlign: TextAlign.end,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onPrimaryContainer,
@@ -106,6 +106,7 @@ class AIAssistantPageState extends State<AIAssistantPage> {
                                 ),
                                 subtitle: Text(
                                   chat.userMessage,
+                                  textAlign: TextAlign.end,
                                   style: TextStyle(
                                     color: colorScheme.onPrimaryContainer
                                         .withOpacity(0.85),
@@ -199,7 +200,7 @@ class AIAssistantPageState extends State<AIAssistantPage> {
       child: Card(
         color: isDark
             ? colorScheme.primaryContainer.withOpacity(0.18)
-            : colorScheme.primaryContainer.withOpacity(0.7),
+            : colorScheme.primaryContainer.withAlpha((0.7 * 255).round()),
         child: Container(
           padding: const EdgeInsets.all(14.0),
           child: Column(
@@ -233,6 +234,9 @@ class AIAssistantPageState extends State<AIAssistantPage> {
       color: isDark
           ? colorScheme.primaryContainer.withOpacity(0.18)
           : colorScheme.primaryContainer.withOpacity(0.7),
+      shadowColor: isDark
+          ? colorScheme.primary.withAlpha((0.2 * 255).round())
+          : colorScheme.primary.withAlpha((0.1 * 255).round()),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -303,8 +307,8 @@ class AIAssistantPageState extends State<AIAssistantPage> {
     }
     return Card(
       color: isDark
-          ? colorScheme.secondaryContainer.withOpacity(0.18)
-          : colorScheme.secondaryContainer.withOpacity(0.7),
+          ? Colors.orange.withAlpha((0.15 * 255).round())
+          : Colors.orange.withAlpha((0.15 * 255).round()),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

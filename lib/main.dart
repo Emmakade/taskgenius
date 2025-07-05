@@ -11,6 +11,7 @@ import 'package:taskgenius/domain/repositories/task_repository.dart';
 import 'package:taskgenius/presentation/pages/auth_wrapper.dart';
 import 'package:taskgenius/presentation/pages/ai_assistant_page.dart';
 
+import 'core/utils/route_name.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
 import 'data/repositories/project_repository_impl.dart';
@@ -25,6 +26,7 @@ import 'presentation/pages/splash_screen.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/home_page.dart';
+import 'routes.dart';
 
 import 'core/utils/cache_manager.dart';
 import 'core/utils/notification_helper.dart';
@@ -116,15 +118,8 @@ class MyApp extends StatelessWidget {
               brightness: Brightness.dark,
             ),
           ),
-          home: SplashScreen(),
-          routes: {
-            '/login': (context) => LoginPage(),
-            '/register': (context) => RegisterPage(),
-            '/home': (context) => HomePage(),
-            '/ai-assistant': (context) => AIAssistantPage(),
-            '/splash': (context) => SplashScreen(),
-            '/auth': (context) => AuthWrapper(),
-          },
+          initialRoute: RouteNames.splash,
+          routes: appRoutes,
           debugShowCheckedModeBanner: false,
           builder: (context, child) {
             ErrorWidget.builder = (FlutterErrorDetails details) {
